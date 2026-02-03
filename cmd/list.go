@@ -8,9 +8,10 @@ import (
 )
 
 var listCmd = &cobra.Command{
-	Use:   "list",
-	Short: "List all tmux sessions",
-	RunE:  runList,
+	Use:     "list",
+	Aliases: []string{"l", "ls"},
+	Short:   "List all tmux sessions",
+	RunE:    runList,
 }
 
 func init() {

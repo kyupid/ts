@@ -11,9 +11,10 @@ import (
 )
 
 var switchCmd = &cobra.Command{
-	Use:   "switch",
-	Short: "Switch to a session using fzf",
-	RunE:  runSwitch,
+	Use:     "switch",
+	Aliases: []string{"s"},
+	Short:   "Switch to a session using fzf",
+	RunE:    runSwitch,
 }
 
 func init() {

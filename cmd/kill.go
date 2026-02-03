@@ -9,9 +9,10 @@ import (
 )
 
 var killCmd = &cobra.Command{
-	Use:   "kill [session-name]",
-	Short: "Kill a session (fzf if no name given)",
-	RunE:  runKill,
+	Use:     "kill [session-name]",
+	Aliases: []string{"k"},
+	Short:   "Kill a session (fzf if no name given)",
+	RunE:    runKill,
 }
 
 func init() {
