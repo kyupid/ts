@@ -1,4 +1,4 @@
-module github.com/kyw/ts
+module github.com/kyupid/ts
 
 go 1.22.6
 

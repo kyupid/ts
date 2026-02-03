@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/kyw/ts/internal/tmux"
+	"github.com/kyupid/ts/internal/tmux"
 	"github.com/spf13/cobra"
 )
 
