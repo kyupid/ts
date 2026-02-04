@@ -1,6 +1,7 @@
 package tmux
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"sort"
@@ -18,6 +19,15 @@ func IsInstalled() bool {
 
 func IsInsideTmux() bool {
 	return os.Getenv("TMUX") != ""
+}
+
+func CurrentSession() (string, error) {
+	cmd := exec.Command("tmux", "display-message", "-p", "#S")
+	out, err := cmd.Output()
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimSpace(string(out)), nil
 }
 
 func ListSessions() ([]Session, error) {
@@ -48,7 +58,14 @@ func ListSessions() ([]Session, error) {
 
 func NewSession(name, path string) error {
 	cmd := exec.Command("tmux", "new-session", "-d", "-s", name, "-c", path)
-	return cmd.Run()
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		if len(output) > 0 {
+			return fmt.Errorf("%w: %s", err, strings.TrimSpace(string(output)))
+		}
+		return err
+	}
+	return nil
 }
 
 func KillSession(name string) error {

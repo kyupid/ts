@@ -12,10 +12,11 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "ts",
-	Short: "tmux session manager",
-	Long:  "Create and manage tmux sessions with auto-numbering for same directory",
-	RunE:  runRoot,
+	Use:          "ts",
+	Short:        "tmux session manager",
+	Long:         "Create and manage tmux sessions with auto-numbering for same directory",
+	SilenceUsage: true,
+	RunE:         runRoot,
 }
 
 func Execute() {
@@ -55,10 +56,14 @@ func generateSessionName(path string) string {
 	path = strings.TrimPrefix(path, home+"/")
 
 	parts := strings.Split(path, "/")
+	var name string
 	if len(parts) >= 2 {
-		return parts[len(parts)-2] + "/" + parts[len(parts)-1]
+		name = parts[len(parts)-2] + "/" + parts[len(parts)-1]
+	} else {
+		name = parts[len(parts)-1]
 	}
-	return parts[len(parts)-1]
+	// tmux converts . to _ in session names
+	return strings.ReplaceAll(name, ".", "_")
 }
 
 func findNextAvailable(baseName string, sessions []tmux.Session) string {

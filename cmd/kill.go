@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os/exec"
 
 	"github.com/kyupid/ts/internal/tmux"
 	"github.com/spf13/cobra"
@@ -11,7 +10,7 @@ import (
 var killCmd = &cobra.Command{
 	Use:     "kill [session-name]",
 	Aliases: []string{"k"},
-	Short:   "Kill a session (fzf if no name given)",
+	Short:   "Kill current session (or specified session)",
 	RunE:    runKill,
 }
 
@@ -29,30 +28,14 @@ func runKill(cmd *cobra.Command, args []string) error {
 	if len(args) > 0 {
 		target = args[0]
 	} else {
-		if _, err := exec.LookPath("fzf"); err != nil {
-			return fmt.Errorf("fzf not found")
+		if !tmux.IsInsideTmux() {
+			return fmt.Errorf("not inside tmux session")
 		}
-
-		sessions, err := tmux.ListSessions()
+		current, err := tmux.CurrentSession()
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to get current session: %w", err)
 		}
-
-		if len(sessions) == 0 {
-			fmt.Println("no sessions")
-			return nil
-		}
-
-		var names []string
-		for _, s := range sessions {
-			names = append(names, s.Name)
-		}
-
-		selected, err := fzfSelect(names, "kill session")
-		if err != nil {
-			return nil // user cancelled
-		}
-		target = selected
+		target = current
 	}
 
 	if err := tmux.KillSession(target); err != nil {
