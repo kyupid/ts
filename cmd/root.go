@@ -12,10 +12,11 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:          "ts",
+	Use:          "ts [session-name]",
 	Short:        "tmux session manager",
 	Long:         "Create and manage tmux sessions with auto-numbering for same directory",
 	SilenceUsage: true,
+	Args:         cobra.MaximumNArgs(1),
 	RunE:         runRoot,
 }
 
@@ -35,13 +36,19 @@ func runRoot(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	baseName := generateSessionName(cwd)
-	sessions, err := tmux.ListSessions()
-	if err != nil {
-		return err
+	var finalName string
+	if len(args) > 0 {
+		// 사용자가 세션 이름을 지정한 경우
+		finalName = strings.ReplaceAll(args[0], ".", "_")
+	} else {
+		// 자동 이름 생성
+		baseName := generateSessionName(cwd)
+		sessions, err := tmux.ListSessions()
+		if err != nil {
+			return err
+		}
+		finalName = findNextAvailable(baseName, sessions)
 	}
-
-	finalName := findNextAvailable(baseName, sessions)
 
 	if err := tmux.NewSession(finalName, cwd); err != nil {
 		return fmt.Errorf("failed to create session: %w", err)
