@@ -21,9 +21,46 @@ var rootCmd = &cobra.Command{
 }
 
 func Execute() {
+	// Handle session name argument before Cobra's subcommand matching
+	// Cobra treats unknown first args as subcommands, so we intercept here
+	if len(os.Args) > 1 {
+		arg := os.Args[1]
+		if !isKnownCommand(arg) && !strings.HasPrefix(arg, "-") {
+			if err := runRoot(rootCmd, []string{arg}); err != nil {
+				fmt.Fprintln(os.Stderr, "Error:", err)
+				os.Exit(1)
+			}
+			return
+		}
+	}
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
 	}
+}
+
+func isKnownCommand(arg string) bool {
+	knownCmds := []string{"list", "l", "ls", "switch", "s", "kill", "k", "help", "completion"}
+	for _, cmd := range knownCmds {
+		if arg == cmd {
+			return true
+		}
+	}
+	return false
+}
+
+func completeSessionNames(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	if len(args) > 0 {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+	sessions, err := tmux.ListSessions()
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+	names := []string{"all"}
+	for _, s := range sessions {
+		names = append(names, s.Name)
+	}
+	return names, cobra.ShellCompDirectiveNoFileComp
 }
 
 func runRoot(cmd *cobra.Command, args []string) error {
