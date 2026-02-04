@@ -31,7 +31,8 @@ internal/tmux/ # tmux interaction layer
 
 | Command | Aliases | Description |
 |---------|---------|-------------|
-| `ts` | - | Create new session |
+| `ts` | - | Create new session (auto-named) |
+| `ts <name>` | - | Create new session with custom name |
 | `ts list` | `l`, `ls` | List sessions |
 | `ts switch` | `s` | Switch session (fzf) |
 | `ts kill` | `k` | Kill session |

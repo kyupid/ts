@@ -30,17 +30,20 @@ make install  # installs to ~/bin
 # Create session (auto-named from current directory)
 ts                    # ~/git/myproject → git/myproject
 
+# Create session with custom name
+ts myproject          # → myproject
+
 # Create another in same directory
 ts                    # → git/myproject-2
 
 # List sessions
-ts list
+ts list               # aliases: l, ls
 
 # Switch session (fzf)
-ts switch
+ts switch             # alias: s
 
 # Kill session
-ts kill               # fzf selection
+ts kill               # fzf selection (alias: k)
 ts kill git/myproject # by name
 ```
 
